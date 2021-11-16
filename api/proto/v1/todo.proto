@@ -1,0 +1,39 @@
+syntax = "proto3";
+import "google/protobuf/timestamp.proto";
+import "google/api/annotations.proto";
+option go_package = ".;pb";
+option csharp_namespace = "TodoService";
+
+message UUID {
+  string value = 1;
+}
+message Todo{
+  UUID id = 1;
+  string name = 2;
+  bool done = 3;
+  google.protobuf.Timestamp created_at = 4;
+}
+message TodoRequest {
+  Todo todo = 1;
+}
+message TodoResponse {
+  string id = 1;
+}
+message  TodoList {
+  repeated Todo data = 1;
+}
+message Void{}
+service TodoService {
+  rpc Create(TodoRequest) returns (TodoResponse){
+    option (google.api.http) = {
+      post: "/v1/bookings"
+      body: "*"
+    };
+  };
+  rpc GetAll(Void) returns (TodoList) {
+    option (google.api.http) ={
+      get: "/v1/bookings"
+    };
+  };
+  rpc MarkDone(TodoRequest) returns (TodoResponse);
+}
