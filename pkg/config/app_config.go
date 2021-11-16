@@ -9,20 +9,23 @@ import (
 var AppCfg = &AppConfig{}
 
 type AppConfig struct {
-	Email *Email `json:"Email"`
+	Email    *Email    `json:"Email"`
+	Database *Database `json:"Database"`
+}
+type Database struct {
+	ConnectionString string `json:"Default"`
 }
 type Email struct {
 	EmailFrom         string `json:"From"`
 	EmailFromPassword string `json:"Password"`
 }
 
-
-func LoadFromJsonOrPanic(filePath string)  (*AppConfig,error){
-	file, err:= os.Open(filePath)
+func LoadFromJsonOrPanic(filePath string) (*AppConfig, error) {
+	file, err := os.Open(filePath)
 	if err != nil {
 		panic("Can not open the file")
 	}
-	byteValue,err := ioutil.ReadAll(file)
+	byteValue, err := ioutil.ReadAll(file)
 	if err != nil {
 		panic("can not read bytes")
 	}

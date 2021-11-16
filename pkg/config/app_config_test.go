@@ -8,14 +8,14 @@ import (
 	"testing"
 )
 
-func TestLoadFromJsonOrPanic(t *testing.T){
+func TestLoadFromJsonOrPanic(t *testing.T) {
 	dir, _ := os.Getwd()
-	rootPath:= path.Dir(path.Dir(dir))
-	data, err:= config.LoadFromJsonOrPanic(filepath.Join(rootPath,"mocks","config","config.json"))
+	rootPath := path.Dir(path.Dir(dir))
+	data, err := config.LoadFromJsonOrPanic(filepath.Join(rootPath, "mocks", "config", "config.json"))
 	if err != nil {
 		t.Fail()
 	}
-	if data.Email == nil {
+	if data.Email == nil || data.Database == nil {
 		t.Fail()
 	}
 }

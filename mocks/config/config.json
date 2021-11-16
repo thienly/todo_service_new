@@ -1,6 +1,6 @@
 {
   "Database": {
-    "Default": ""
+    "Default": "default connection"
   },
   "Email": {
     "From": "phuthien0308@gmail.com",
