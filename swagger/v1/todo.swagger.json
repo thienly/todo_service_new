@@ -7,6 +7,9 @@
   "tags": [
     {
       "name": "TodoService"
+    },
+    {
+      "name": "UserService"
     }
   ],
   "consumes": [
@@ -16,27 +19,7 @@
     "application/json"
   ],
   "paths": {
-    "/v1/bookings": {
-      "get": {
-        "operationId": "TodoService_GetAll",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/TodoList"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "tags": [
-          "TodoService"
-        ]
-      },
+    "/v1/todos": {
       "post": {
         "operationId": "TodoService_Create",
         "responses": {
@@ -67,6 +50,90 @@
           "TodoService"
         ]
       }
+    },
+    "/v1/todos/markdone": {
+      "post": {
+        "operationId": "TodoService_MarkDone",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/TodoMarkDoneResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/TodoMarkdoneRequest"
+            }
+          }
+        ],
+        "tags": [
+          "TodoService"
+        ]
+      }
+    },
+    "/v1/users": {
+      "get": {
+        "operationId": "UserService_GetAllUsers",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/UsersResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "UserService"
+        ]
+      },
+      "post": {
+        "operationId": "UserService_CreateUser",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/UserResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UserRequest"
+            }
+          }
+        ],
+        "tags": [
+          "UserService"
+        ]
+      }
     }
   },
   "definitions": {
@@ -74,7 +141,8 @@
       "type": "object",
       "properties": {
         "id": {
-          "$ref": "#/definitions/UUID"
+          "type": "string",
+          "format": "int64"
         },
         "name": {
           "type": "string"
@@ -85,23 +153,40 @@
         "createdAt": {
           "type": "string",
           "format": "date-time"
+        },
+        "description": {
+          "type": "string"
         }
       }
     },
-    "TodoList": {
+    "TodoMarkDoneResponse": {
       "type": "object",
       "properties": {
-        "data": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Todo"
-          }
+        "done": {
+          "type": "boolean"
+        }
+      }
+    },
+    "TodoMarkdoneRequest": {
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "format": "int64"
+        },
+        "todoId": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },
     "TodoRequest": {
       "type": "object",
       "properties": {
+        "userId": {
+          "type": "string",
+          "format": "int64"
+        },
         "todo": {
           "$ref": "#/definitions/Todo"
         }
@@ -115,11 +200,57 @@
         }
       }
     },
-    "UUID": {
+    "User": {
       "type": "object",
       "properties": {
-        "value": {
+        "name": {
           "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "todoList": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Todo"
+          }
+        }
+      }
+    },
+    "UserRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        }
+      }
+    },
+    "UserResponse": {
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "UsersResponse": {
+      "type": "object",
+      "properties": {
+        "users": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/User"
+          }
         }
       }
     },

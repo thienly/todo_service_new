@@ -2,13 +2,14 @@ package domain
 
 import (
 	"errors"
+	"new_todo_project/pb"
 )
 
 type Todo struct {
-	Id          int
-	Title       string
-	Description string
-	Done        bool
+	Id          int    `sql-col:"id"`
+	Title       string `sql-col:"title"`
+	Description string `sq--col:"description"`
+	Done        bool   `sql-col:"done"`
 }
 
 func NewTodo(title, description string, done bool) *Todo {
@@ -24,10 +25,10 @@ func (t *Todo) MarkDone() {
 }
 
 type User struct {
-	Id       int
-	Name     string
-	Password string
-	Email    string
+	Id       int    `sql-col:"user_id"`
+	Name     string `sql-col:"username"`
+	Password string `sql-col:"password"`
+	Email    string `sql-col:"email"`
 	Todos    []*Todo
 }
 
@@ -66,4 +67,33 @@ func (u *User) MarkDone(id int) error {
 		return errors.New("Can not find error")
 	}
 	return nil
+}
+
+func ToPbUser(u *User) *pb.User {
+	var todoPbs []*pb.Todo
+	for _, todo := range u.Todos {
+		todoPbs = append(todoPbs, ToPbTodo(todo))
+	}
+	return &pb.User{
+		Name:     u.Name,
+		Password: u.Password,
+		Email:    u.Email,
+		TodoList: todoPbs,
+	}
+}
+
+func ToPbTodo(t *Todo) *pb.Todo {
+	return &pb.Todo{
+		Id:   int64(t.Id),
+		Name: t.Title,
+		Done: t.Done,
+	}
+}
+
+func ToDomainTodo(t *pb.TodoRequest) *Todo {
+	return &Todo{
+		Title:       t.Todo.Name,
+		Description: t.Todo.Description,
+		Done:        t.Todo.Done,
+	}
 }

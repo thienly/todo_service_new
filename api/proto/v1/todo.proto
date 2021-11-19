@@ -4,17 +4,24 @@ import "google/api/annotations.proto";
 option go_package = ".;pb";
 option csharp_namespace = "TodoService";
 
-message UUID {
-  string value = 1;
-}
+
 message Todo{
-  UUID id = 1;
+  int64 id = 1;
   string name = 2;
   bool done = 3;
   google.protobuf.Timestamp created_at = 4;
+  string description = 5;
 }
 message TodoRequest {
+  int64 user_id = 2;
   Todo todo = 1;
+}
+message TodoMarkdoneRequest {
+  int64  user_id = 1;
+  int64 todo_id = 2;
+}
+message TodoMarkDoneResponse {
+  bool done = 1;
 }
 message TodoResponse {
   string id = 1;
@@ -26,14 +33,46 @@ message Void{}
 service TodoService {
   rpc Create(TodoRequest) returns (TodoResponse){
     option (google.api.http) = {
-      post: "/v1/bookings"
+      post: "/v1/todos"
       body: "*"
     };
   };
-  rpc GetAll(Void) returns (TodoList) {
-    option (google.api.http) ={
-      get: "/v1/bookings"
+  rpc MarkDone(TodoMarkdoneRequest) returns (TodoMarkDoneResponse){
+    option (google.api.http) = {
+      post: "/v1/todos/markdone"
+      body: "*"
     };
   };
-  rpc MarkDone(TodoRequest) returns (TodoResponse);
+}
+
+message UserRequest {
+   string name = 1;
+   string password = 2;
+   string email = 3;
+}
+message UserResponse {
+  int64 user_id =1;
+}
+message UsersResponse {
+  repeated User users = 1;
+}
+message User {
+  string name = 1;
+  string password = 2;
+  string email = 3;
+  repeated Todo todoList = 4;
+}
+
+service UserService {
+  rpc CreateUser(UserRequest) returns (UserResponse){
+  option (google.api.http) = {
+  post:"/v1/users"
+      body: "*"
+      };
+      }
+  rpc GetAllUsers(Void) returns (UsersResponse) {
+  option (google.api.http) = {
+  get: "/v1/users"
+      };
+      }
 }

@@ -1,6 +1,6 @@
 {
   "Database": {
-    "Default": "host=localhost port=5432 user=puser password=ppassword dbname=todo_database sslmode=disable"
+    "Default": "postgres://puser:ppassword@localhost:5432/todo_database?sslmode=disable"
   },
   "Email": {
     "From": "phuthien0308@gmail.com",

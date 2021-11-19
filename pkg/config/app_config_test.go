@@ -11,7 +11,7 @@ import (
 func TestLoadFromJsonOrPanic(t *testing.T) {
 	dir, _ := os.Getwd()
 	rootPath := path.Dir(path.Dir(dir))
-	data, err := config.LoadFromJsonOrPanic(filepath.Join(rootPath, "mocks", "config", "config.json"))
+	data, err := config.LoadFromJsonOrPanic(filepath.Join(rootPath, "config.json"))
 	if err != nil {
 		t.Fail()
 	}

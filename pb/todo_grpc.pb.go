@@ -19,8 +19,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type TodoServiceClient interface {
 	Create(ctx context.Context, in *TodoRequest, opts ...grpc.CallOption) (*TodoResponse, error)
-	GetAll(ctx context.Context, in *Void, opts ...grpc.CallOption) (*TodoList, error)
-	MarkDone(ctx context.Context, in *TodoRequest, opts ...grpc.CallOption) (*TodoResponse, error)
+	MarkDone(ctx context.Context, in *TodoMarkdoneRequest, opts ...grpc.CallOption) (*TodoMarkDoneResponse, error)
 }
 
 type todoServiceClient struct {
@@ -40,17 +39,8 @@ func (c *todoServiceClient) Create(ctx context.Context, in *TodoRequest, opts ..
 	return out, nil
 }
 
-func (c *todoServiceClient) GetAll(ctx context.Context, in *Void, opts ...grpc.CallOption) (*TodoList, error) {
-	out := new(TodoList)
-	err := c.cc.Invoke(ctx, "/TodoService/GetAll", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *todoServiceClient) MarkDone(ctx context.Context, in *TodoRequest, opts ...grpc.CallOption) (*TodoResponse, error) {
-	out := new(TodoResponse)
+func (c *todoServiceClient) MarkDone(ctx context.Context, in *TodoMarkdoneRequest, opts ...grpc.CallOption) (*TodoMarkDoneResponse, error) {
+	out := new(TodoMarkDoneResponse)
 	err := c.cc.Invoke(ctx, "/TodoService/MarkDone", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -63,8 +53,7 @@ func (c *todoServiceClient) MarkDone(ctx context.Context, in *TodoRequest, opts 
 // for forward compatibility
 type TodoServiceServer interface {
 	Create(context.Context, *TodoRequest) (*TodoResponse, error)
-	GetAll(context.Context, *Void) (*TodoList, error)
-	MarkDone(context.Context, *TodoRequest) (*TodoResponse, error)
+	MarkDone(context.Context, *TodoMarkdoneRequest) (*TodoMarkDoneResponse, error)
 	mustEmbedUnimplementedTodoServiceServer()
 }
 
@@ -75,10 +64,7 @@ type UnimplementedTodoServiceServer struct {
 func (UnimplementedTodoServiceServer) Create(context.Context, *TodoRequest) (*TodoResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Create not implemented")
 }
-func (UnimplementedTodoServiceServer) GetAll(context.Context, *Void) (*TodoList, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetAll not implemented")
-}
-func (UnimplementedTodoServiceServer) MarkDone(context.Context, *TodoRequest) (*TodoResponse, error) {
+func (UnimplementedTodoServiceServer) MarkDone(context.Context, *TodoMarkdoneRequest) (*TodoMarkDoneResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method MarkDone not implemented")
 }
 func (UnimplementedTodoServiceServer) mustEmbedUnimplementedTodoServiceServer() {}
@@ -112,26 +98,8 @@ func _TodoService_Create_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
-func _TodoService_GetAll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Void)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(TodoServiceServer).GetAll(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/TodoService/GetAll",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TodoServiceServer).GetAll(ctx, req.(*Void))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _TodoService_MarkDone_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(TodoRequest)
+	in := new(TodoMarkdoneRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -143,7 +111,7 @@ func _TodoService_MarkDone_Handler(srv interface{}, ctx context.Context, dec fun
 		FullMethod: "/TodoService/MarkDone",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TodoServiceServer).MarkDone(ctx, req.(*TodoRequest))
+		return srv.(TodoServiceServer).MarkDone(ctx, req.(*TodoMarkdoneRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -160,12 +128,130 @@ var TodoService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _TodoService_Create_Handler,
 		},
 		{
-			MethodName: "GetAll",
-			Handler:    _TodoService_GetAll_Handler,
-		},
-		{
 			MethodName: "MarkDone",
 			Handler:    _TodoService_MarkDone_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "v1/todo.proto",
+}
+
+// UserServiceClient is the client API for UserService service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type UserServiceClient interface {
+	CreateUser(ctx context.Context, in *UserRequest, opts ...grpc.CallOption) (*UserResponse, error)
+	GetAllUsers(ctx context.Context, in *Void, opts ...grpc.CallOption) (*UsersResponse, error)
+}
+
+type userServiceClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewUserServiceClient(cc grpc.ClientConnInterface) UserServiceClient {
+	return &userServiceClient{cc}
+}
+
+func (c *userServiceClient) CreateUser(ctx context.Context, in *UserRequest, opts ...grpc.CallOption) (*UserResponse, error) {
+	out := new(UserResponse)
+	err := c.cc.Invoke(ctx, "/UserService/CreateUser", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) GetAllUsers(ctx context.Context, in *Void, opts ...grpc.CallOption) (*UsersResponse, error) {
+	out := new(UsersResponse)
+	err := c.cc.Invoke(ctx, "/UserService/GetAllUsers", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// UserServiceServer is the server API for UserService service.
+// All implementations must embed UnimplementedUserServiceServer
+// for forward compatibility
+type UserServiceServer interface {
+	CreateUser(context.Context, *UserRequest) (*UserResponse, error)
+	GetAllUsers(context.Context, *Void) (*UsersResponse, error)
+	mustEmbedUnimplementedUserServiceServer()
+}
+
+// UnimplementedUserServiceServer must be embedded to have forward compatible implementations.
+type UnimplementedUserServiceServer struct {
+}
+
+func (UnimplementedUserServiceServer) CreateUser(context.Context, *UserRequest) (*UserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateUser not implemented")
+}
+func (UnimplementedUserServiceServer) GetAllUsers(context.Context, *Void) (*UsersResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAllUsers not implemented")
+}
+func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
+
+// UnsafeUserServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to UserServiceServer will
+// result in compilation errors.
+type UnsafeUserServiceServer interface {
+	mustEmbedUnimplementedUserServiceServer()
+}
+
+func RegisterUserServiceServer(s grpc.ServiceRegistrar, srv UserServiceServer) {
+	s.RegisterService(&UserService_ServiceDesc, srv)
+}
+
+func _UserService_CreateUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).CreateUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/UserService/CreateUser",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).CreateUser(ctx, req.(*UserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_GetAllUsers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Void)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).GetAllUsers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/UserService/GetAllUsers",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).GetAllUsers(ctx, req.(*Void))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var UserService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "UserService",
+	HandlerType: (*UserServiceServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "CreateUser",
+			Handler:    _UserService_CreateUser_Handler,
+		},
+		{
+			MethodName: "GetAllUsers",
+			Handler:    _UserService_GetAllUsers_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
