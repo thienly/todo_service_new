@@ -63,11 +63,17 @@ func (t *todoImpl) AddNewUser(ctx context.Context, u *domain.User) (int64, error
 	var id int64
 	rows := tx.QueryRowContext(ctx, INSERT_NEW_USER, u.Name, u.Password, u.Email)
 	if rows.Err() != nil {
-		rawError := rows.Err().(*pg.Error)
-		if rawError.Code == ("23505") {
-			return 0, errors.New("Duplication data")
+		rawError, ok := rows.Err().(*pg.Error)
+		if ok {
+			if rawError.Code == ("23505") {
+				err = errors.New("Duplication data")
+				return 0, err
+			} else {
+				err = errors.New("Internal server")
+				return 0, err
+			}
 		} else {
-			return 0, errors.New("Internal server")
+			return 0, rows.Err()
 		}
 	}
 	rows.Scan(&id)
