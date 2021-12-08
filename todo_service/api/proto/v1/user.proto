@@ -1,0 +1,38 @@
+syntax = "proto3";
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+import "v1/todo.proto";
+option go_package = ".;pb";
+
+
+message UserRequest {
+  string name = 1;
+  string password = 2;
+  string email = 3;
+}
+message UserResponse {
+  int64 user_id =1;
+}
+message UserList {
+  repeated User users = 1;
+}
+message User {
+  string name = 1;
+  string password = 2;
+  string email = 3;
+  repeated Todo todoList = 4;
+}
+
+service UserService {
+  rpc CreateUser(UserRequest) returns (UserResponse){
+    option (google.api.http) = {
+      post:"/v1/users"
+      body: "*"
+    };
+  }
+  rpc GetAllUsers(google.protobuf.Empty) returns (UserList) {
+    option (google.api.http) = {
+      get: "/v1/users"
+    };
+  }
+}
