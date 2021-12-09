@@ -3,6 +3,7 @@ package todo_database
 import (
 	"context"
 	"database/sql"
+	"github.com/afex/hystrix-go/hystrix"
 	"github.com/rs/zerolog"
 	"new_todo_project/internal/domain"
 )
@@ -34,10 +35,17 @@ type todoImpl struct {
 
 func NewTodoDatabase(logger zerolog.Logger, pool *sql.DB) TodoDatabase {
 	logger = logger.With().Str("package", "todo_database").Logger()
-	return &todoImplProxy{todoImpl{
-		db:     pool,
-		logger: logger,
-	},
+	hystrix.ConfigureCommand("database", hystrix.CommandConfig{
+		Timeout:               1000,
+		MaxConcurrentRequests: 100,
+		SleepWindow:           100,
+		ErrorPercentThreshold: 20,
+	})
+	return &todoImplProxy{
+		todoImpl{
+			db:     pool,
+			logger: logger,
+		},
 	}
 }
 
@@ -45,3 +53,72 @@ type todoImplProxy struct {
 	todoImpl
 }
 
+func (proxy *todoImplProxy) AddNewUser(ctx context.Context, u *domain.User) (int64, error) {
+	resultChan := make(chan int64)
+	errChan := hystrix.Go("database", func() error {
+		user, err := proxy.todoImpl.AddNewUser(ctx, u)
+		resultChan <- user
+		return err
+	}, func(err error) error {
+		if ok := retryAbleError(err); ok {
+			_, _ = proxy.AddNewUser(ctx, u)
+		}
+		return err
+	})
+	select {
+	case out := <-resultChan:
+		return out, nil
+	case err := <-errChan:
+		return 0, err
+	}
+}
+
+func retryAbleError(err error) bool {
+	return true
+}
+
+func (proxy *todoImplProxy) AddNewTodo(ctx context.Context, userId int, todo *domain.Todo) (int, error) {
+	resultChan := make(chan int)
+	errChan := hystrix.Go("database", func() error {
+		user, err := proxy.todoImpl.AddNewTodo(ctx, userId, todo)
+		resultChan <- user
+		return err
+	}, func(err error) error {
+		if ok := retryAbleError(err); ok {
+			_, _ = proxy.AddNewTodo(ctx, userId, todo)
+		}
+		return err
+	})
+	select {
+	case out := <-resultChan:
+		return out, nil
+	case err := <-errChan:
+		return 0, err
+	}
+
+	HytrixWrapper(resultChan,errChan, func() (interface{}, error) {
+		newTodo, err := proxy.todoImpl.AddNewTodo(ctx, userId, todo)
+		return newTodo, err
+	})
+}
+// delay call
+// high order function
+func abc(run func() error) func(i interface{}){
+	return func(i interface{}) {
+		run()
+	}
+}
+// high order function
+
+func HytrixWrapper(result chan interface{}, errChan chan error, run func() (interface{},error)) {
+	errChan = hystrix.Go("database", func() error {
+		// logging
+		// tracing
+		i, err := run()
+		result <- i
+		return err
+	}, func(err error) error {
+		_, _ = run()
+		return err
+	})
+}
