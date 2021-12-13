@@ -3,9 +3,10 @@ package todo_database
 import (
 	"context"
 	"database/sql"
+	"new_todo_project/internal/domain"
+
 	"github.com/afex/hystrix-go/hystrix"
 	"github.com/rs/zerolog"
-	"new_todo_project/internal/domain"
 )
 
 type DatabaseResult struct {
@@ -95,30 +96,4 @@ func (proxy *todoImplProxy) AddNewTodo(ctx context.Context, userId int, todo *do
 	case err := <-errChan:
 		return 0, err
 	}
-
-	HytrixWrapper(resultChan,errChan, func() (interface{}, error) {
-		newTodo, err := proxy.todoImpl.AddNewTodo(ctx, userId, todo)
-		return newTodo, err
-	})
-}
-// delay call
-// high order function
-func abc(run func() error) func(i interface{}){
-	return func(i interface{}) {
-		run()
-	}
-}
-// high order function
-
-func HytrixWrapper(result chan interface{}, errChan chan error, run func() (interface{},error)) {
-	errChan = hystrix.Go("database", func() error {
-		// logging
-		// tracing
-		i, err := run()
-		result <- i
-		return err
-	}, func(err error) error {
-		_, _ = run()
-		return err
-	})
 }

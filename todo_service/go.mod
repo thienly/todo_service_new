@@ -4,7 +4,7 @@ go 1.16
 
 require (
 	github.com/DATA-DOG/go-sqlmock v1.5.0
-	github.com/afex/hystrix-go v0.0.0-20180502004556-fa1af6a1f4f5 // indirect
+	github.com/afex/hystrix-go v0.0.0-20180502004556-fa1af6a1f4f5
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.6.0
 	github.com/lib/pq v1.10.4
 	github.com/rs/zerolog v1.26.0
