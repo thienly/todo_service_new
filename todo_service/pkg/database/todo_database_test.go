@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/afex/hystrix-go/hystrix"
 	"github.com/rs/zerolog"
 	"github.com/smartystreets/goconvey/convey"
 	"new_todo_project/internal/domain"
@@ -107,10 +106,12 @@ func TestAddNewTodo(t *testing.T) {
 //	return 0, "A"
 //}
 //
-func Wapper(resultChan chan []interface{}, run func() error)
-	hystrix.Do("database", func() error {
-		//logging
-		//tracing
-		return run()
-	}, nil)
+
+type WrapperData struct {
+	err error
+	data []interface{}
+}
+
+func Wrapper(){
+
 }
