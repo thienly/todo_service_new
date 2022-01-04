@@ -88,30 +88,15 @@ func TestAddNewTodo(t *testing.T) {
 		})
 	})
 }
-//
-//func TestWrapper(t *testing.T) {
-//	resultChan := make(chan []interface{})
-//	Wapper(resultChan, func() error {
-//		// call and pass for resultChan
-//		x, y := SayHi()
-//		s := make([]interface{}, 2)
-//		s = append(s, x)
-//		s = append(s, y)
-//		resultChan <- s
-//		return nil
-//	})
-//}
-//
-//func SayHi() (int, string) {
-//	return 0, "A"
-//}
-//
 
-type WrapperData struct {
-	err error
-	data []interface{}
-}
-
-func Wrapper(){
-
+func TestMarkDone(t *testing.T) {
+	convey.Convey("should call sql", t, func() {
+		db, mock, err:= sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
+		if err != nil {
+			t.Fail()
+		}
+		mock.ExpectExec(todo_database.MARK_DONE_TODO)
+		database := todo_database.NewTodoDatabase(zerolog.New(os.Stdout), db)
+		_ = database.MarkDone(context.Background(),1)
+	})
 }

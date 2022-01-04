@@ -1,7 +1,7 @@
 all:
 	@echo server generate database psql-start psql-stop migration-up migration-down
 server:
-	go run cmd/server/main.go
+	go run cmd/server/*.go
 generate:
 	@bash protoc-gen.sh
 psql-start:

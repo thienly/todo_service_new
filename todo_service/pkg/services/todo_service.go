@@ -5,20 +5,20 @@ import (
 	"github.com/rs/zerolog"
 	"new_todo_project/internal/domain"
 	"new_todo_project/pb"
-	d "new_todo_project/pkg/database"
 	"strconv"
+
+	db "new_todo_project/pkg/database"
 )
 
 type todoServiceImpl struct {
 	logger zerolog.Logger
-	db     d.TodoDatabase
+	db     db.TodoDatabase
 	pb.UnimplementedTodoServiceServer
 }
 
-func NewTodoService(logger zerolog.Logger, db d.TodoDatabase) pb.TodoServiceServer {
-	logger = logger.With().Str("package", "services").Logger()
+func NewTodoService(logger zerolog.Logger, db db.TodoDatabase) pb.TodoServiceServer {
 	return &todoServiceImpl{
-		db:     db,
+		db: db,
 		logger: logger,
 	}
 }
@@ -34,8 +34,10 @@ func (t *todoServiceImpl) Create(ctx context.Context, request *pb.TodoRequest) (
 
 
 func (t *todoServiceImpl) MarkDone(ctx context.Context, request *pb.TodoMarkdoneRequest) (*pb.TodoMarkDoneResponse, error) {
-	return nil,nil
+	err := t.db.MarkDone(ctx, int(request.TodoId))
+	if err != nil {
+		return nil, err
+	}
+	return nil, err
 }
 
-func (t *todoServiceImpl) mustEmbedUnimplementedTodoServiceServer() {
-}

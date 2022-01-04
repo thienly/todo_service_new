@@ -14,10 +14,10 @@ func (t *todoImpl) GetUsers(ctx context.Context) ([]*domain.User, error) {
 		if r := recover(); r != nil {
 			t.logger.Err(err)
 		}
-		_: rows.Close()
 	}()
-
 	if err != nil {
+		pgErr:= err.(*pg.Error)
+		t.logger.Error().Err(pgErr).Msg(pgErr.Message)
 		return nil, err
 	}
 	results := make(map[int]*domain.User)
@@ -47,7 +47,6 @@ func (t *todoImpl) GetUsers(ctx context.Context) ([]*domain.User, error) {
 		data = append(data, user)
 	}
 	return data, nil
-
 }
 
 

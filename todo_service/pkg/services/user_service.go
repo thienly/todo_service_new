@@ -40,9 +40,10 @@ func (u *userServiceImpl) CreateUser(ctx context.Context, in *pb.UserRequest) (*
 	return &pb.UserResponse{UserId: dbResult}, nil
 }
 
-func (u *userServiceImpl) GetAllUsers(ctx context.Context, empty *emptypb.Empty) (*pb.UserList, error) {
+func (u *userServiceImpl) GetAllUsers(ctx context.Context, empty *emptypb.Empty) (user *pb.UserList, errR error) {
 	u.logger.Info().Msg("Get users")
 	users, err := u.db.GetUsers(ctx)
+
 	if err != nil {
 		u.logger.Log().Err(err)
 		return nil, status.Errorf(codes.Internal, "Internal server error!")
