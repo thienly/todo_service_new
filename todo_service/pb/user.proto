@@ -1,7 +1,7 @@
 syntax = "proto3";
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
-import "v1/todo.proto";
+import "todo.proto";
 option go_package = ".;pb";
 
 

@@ -9,6 +9,8 @@ require (
 	github.com/lib/pq v1.10.4
 	github.com/rs/zerolog v1.26.0
 	github.com/smartystreets/goconvey v1.7.2
+	github.com/urfave/cli/v2 v2.3.0 // indirect
+	golang.org/x/term v0.0.0-20210927222741-03fcf44c2211 // indirect
 	google.golang.org/genproto v0.0.0-20211115160612-a5da7257a6f7
 	google.golang.org/grpc v1.42.0
 	google.golang.org/protobuf v1.27.1

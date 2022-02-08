@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "v1/todo.proto",
+    "title": "todo.proto",
     "version": "version not set"
   },
   "tags": [
@@ -10,6 +10,9 @@
     },
     {
       "name": "UserService"
+    },
+    {
+      "name": "LoginService"
     }
   ],
   "consumes": [
@@ -19,6 +22,38 @@
     "application/json"
   ],
   "paths": {
+    "/login": {
+      "post": {
+        "operationId": "LoginService_Login",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/LoginResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/LoginRequest"
+            }
+          }
+        ],
+        "tags": [
+          "LoginService"
+        ]
+      }
+    },
     "/v1/todos": {
       "post": {
         "operationId": "TodoService_Create",
@@ -137,6 +172,25 @@
     }
   },
   "definitions": {
+    "LoginRequest": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      }
+    },
+    "LoginResponse": {
+      "type": "object",
+      "properties": {
+        "token": {
+          "type": "string"
+        }
+      }
+    },
     "Todo": {
       "type": "object",
       "properties": {

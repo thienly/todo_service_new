@@ -2,56 +2,13 @@ package main1
 
 import (
 	"crypto/md5"
-	"encoding/json"
-	"fmt"
 	"io/fs"
 	"io/ioutil"
 	"path/filepath"
 	"sync"
 )
 
-type Person struct {
-	Name string
-}
-
-func (p Person) ChangeName() {
-	fmt.Printf("%p\n", &p)
-	p.Name = "Changed"
-}
-type sample struct {
-	Ids []int32 `json:"ids"`
-	Name string `json:"name"`
-}
-
-
 func main() {
-
-	str :=  `{"ids":[a,2,3], "name" :"ABC"}`
-	byt := []byte(str)
-
-	vl := sample{}
-	err:= json.Unmarshal(byt, &vl)
-	if err !=nil {
-		fmt.Println(err)
-	}
-	fmt.Println(vl.Ids)
-	// m, err:= MD5All(os.Args[1])
-	// if err != nil {
-	// 	fmt.Println(err)
-	// 	return
-	// }
-	// var paths []string
-	// for path := range m {
-	// 	paths = append(paths, path)
-	// }
-	// sort.Strings(paths)
-	// for _, path := range paths {
-	// 	fmt.Printf("%x  %s\n", m[path], path)
-	// }
-	//p := Person{Name: "Thien"}
-	//fmt.Printf("%p\n", &p)
-	//p.ChangeName()
-	//fmt.Println(p)
 
 }
 
