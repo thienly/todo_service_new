@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	pg "github.com/lib/pq"
-	"new_todo_project/internal/domain"
+	"new_todo_project/pkg/domain"
 )
 // GetUsers gets all users of system
 func (t *todoImpl) GetUsers(ctx context.Context) ([]*domain.User, error) {
@@ -86,4 +86,26 @@ func (t *todoImpl) AddNewUser(ctx context.Context, u *domain.User) (int64, error
 	}
 	err = rows.Scan(&id)
 	return id, nil
+}
+
+func (c *todoImpl) GetUserByUserNameAndPassword(ctx context.Context, userName, password string) (*domain.User, error) {
+	rows, err := c.db.QueryContext(ctx, GET_USER_BY_USERNAME_PASS, userName, password)
+	if err != nil {
+		return nil, errors.New("can not find user")
+	}
+
+	rows.Next()
+	var id sql.NullInt64
+	var usernameCl sql.NullString
+	var passwordCl sql.NullString
+	err = rows.Scan(&id, &usernameCl, &passwordCl)
+	if err != nil {
+		return nil, err
+	}
+	user := &domain.User{
+		Id: int(id.Int64),
+		Name: usernameCl.String,
+		Password: passwordCl.String,
+	}
+	return user, nil
 }

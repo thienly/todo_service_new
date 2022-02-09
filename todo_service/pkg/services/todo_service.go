@@ -3,8 +3,8 @@ package services
 import (
 	"context"
 	"github.com/rs/zerolog"
-	"new_todo_project/internal/domain"
 	"new_todo_project/pb"
+	"new_todo_project/pkg/domain"
 	"strconv"
 
 	db "new_todo_project/pkg/database"

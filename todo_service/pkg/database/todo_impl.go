@@ -2,7 +2,7 @@ package todo_database
 
 import (
 	"context"
-	"new_todo_project/internal/domain"
+	"new_todo_project/pkg/domain"
 )
 
 func (t *todoImpl) AddNewTodo(ctx context.Context, userId int, todo *domain.Todo) (int, error) {

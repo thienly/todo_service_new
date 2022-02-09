@@ -1,7 +1,8 @@
 package domain_test
 
 import (
-	"new_todo_project/internal/domain"
+	"github.com/stretchr/testify/require"
+	"new_todo_project/pkg/domain"
 	"testing"
 )
 
@@ -25,4 +26,9 @@ func TestNewUser(t *testing.T) {
 	if user == nil {
 		t.Fail()
 	}
+}
+
+func TestUser_GenerateToken(t *testing.T) {
+	user := domain.NewUser("Test", "a@gmail.com", "a@gmail.com")
+	require.Equal(t, user.GenerateToken(), "test_a@gmail.com", "should be equal")
 }

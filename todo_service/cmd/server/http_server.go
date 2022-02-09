@@ -3,23 +3,22 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/grpc-ecosystem/grpc-gateway/runtime"
-	"github.com/rs/zerolog"
-	"google.golang.org/grpc"
 	"io/ioutil"
 	"net/http"
 	"new_todo_project/pb"
+
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"github.com/rs/zerolog"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
-func startHttpServer(log zerolog.Logger, grpcPort, port int) error{
+func startHttpServer(log zerolog.Logger, grpcPort, port int) error {
+	serverAddr := fmt.Sprintf("0.0.0.0:%d", grpcPort)
 	ctx := context.Background()
-	ctxCancel, _ := context.WithCancel(ctx)
 	gwMux := runtime.NewServeMux()
-	opts := grpc.WithInsecure()
-	err := pb.RegisterTodoServiceHandlerFromEndpoint(ctxCancel, gwMux, fmt.Sprintf("0.0.0.0:%d", grpcPort), []grpc.DialOption{opts})
-	err = pb.RegisterUserServiceHandlerFromEndpoint(ctxCancel, gwMux,fmt.Sprintf("0.0.0.0:%d", grpcPort), []grpc.DialOption{opts})
-	if err != nil {
-		log.Fatal().Msg("Can not establish connection to grpc server")
+	if err:= registerEndpoints(ctx, serverAddr, gwMux); err != nil {
+		return err
 	}
 	// swagger server.
 	swaggerMux := http.NewServeMux()
@@ -32,4 +31,12 @@ func startHttpServer(log zerolog.Logger, grpcPort, port int) error{
 	swaggerMux.Handle("/swagger-ui/", http.StripPrefix("/swagger-ui/", fs))
 	log.Info().Msg(fmt.Sprintf("Listening httpServer on %s", fmt.Sprintf("0.0.0.0:%d", port)))
 	return http.ListenAndServe(fmt.Sprintf("0.0.0.0:%d", port), swaggerMux)
+}
+func registerEndpoints(ctx context.Context, serverAddr string, gwMux *runtime.ServeMux) error {
+	ctxCancel, _ := context.WithCancel(ctx)
+	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
+	err := pb.RegisterTodoServiceHandlerFromEndpoint(ctxCancel, gwMux, serverAddr, opts)
+	err = pb.RegisterUserServiceHandlerFromEndpoint(ctxCancel, gwMux, serverAddr, opts)
+	err = pb.RegisterLoginServiceHandlerFromEndpoint(ctxCancel, gwMux, serverAddr, opts )
+	return err
 }

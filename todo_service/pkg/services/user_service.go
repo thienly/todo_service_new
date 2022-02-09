@@ -6,9 +6,9 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
-	"new_todo_project/internal/domain"
 	"new_todo_project/pb"
 	db "new_todo_project/pkg/database"
+	"new_todo_project/pkg/domain"
 )
 
 type userServiceImpl struct {

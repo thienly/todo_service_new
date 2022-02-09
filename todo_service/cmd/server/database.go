@@ -2,8 +2,9 @@ package main
 
 import (
 	"database/sql"
-	"github.com/rs/zerolog"
 	"new_todo_project/pkg/config"
+
+	"github.com/rs/zerolog"
 )
 
 func loadDatabase(logger zerolog.Logger) (*sql.DB, error) {

@@ -6,8 +6,8 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/rs/zerolog"
 	"github.com/smartystreets/goconvey/convey"
-	"new_todo_project/internal/domain"
 	todo_database "new_todo_project/pkg/database"
+	"new_todo_project/pkg/domain"
 	"os"
 	"testing"
 )

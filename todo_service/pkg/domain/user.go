@@ -1,6 +1,10 @@
 package domain
 
-import "errors"
+import (
+	"errors"
+	"fmt"
+	"strings"
+)
 
 type User struct {
 	Id       int    `sql-col:"id"`
@@ -47,4 +51,9 @@ func (u *User) MarkDone(id int) error {
 		return errors.New("Can not find error")
 	}
 	return nil
+}
+
+func (u *User) GenerateToken() string{
+	token:= fmt.Sprintf("%v_%v", strings.ToLower(u.Name), strings.ToLower(u.Password))
+	return token
 }
