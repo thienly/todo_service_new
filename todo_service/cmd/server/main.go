@@ -1,12 +1,12 @@
 package main
 
 import (
-	"database/sql"
 	"flag"
 	"fmt"
 	"os"
 	"os/signal"
 
+	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 	"github.com/rs/zerolog"
 )
@@ -32,7 +32,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	go func(logger zerolog.Logger, db *sql.DB, port int) {
+	go func(logger zerolog.Logger, db *sqlx.DB, port int) {
 		err := startGrpcServer(logger, db, port)
 		if err != nil {
 			os.Exit(1)

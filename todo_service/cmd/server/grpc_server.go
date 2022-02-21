@@ -1,17 +1,18 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
-	"github.com/rs/zerolog"
-	"google.golang.org/grpc"
 	"net"
 	"new_todo_project/pb"
 	d "new_todo_project/pkg/database"
 	"new_todo_project/pkg/services"
+
+	"github.com/jmoiron/sqlx"
+	"github.com/rs/zerolog"
+	"google.golang.org/grpc"
 )
 
-func startGrpcServer(logger zerolog.Logger, db *sql.DB, port int) error {
+func startGrpcServer(logger zerolog.Logger, db *sqlx.DB, port int) error {
 	todoDatabase := d.NewTodoDatabase(logger, db)
 	todoService := services.NewTodoService(logger, todoDatabase)
 	userService := services.NewUserService(logger, todoDatabase)

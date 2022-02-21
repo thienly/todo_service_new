@@ -3,13 +3,14 @@ package todo_database_test
 import (
 	"context"
 	"errors"
-	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/rs/zerolog"
-	"github.com/smartystreets/goconvey/convey"
 	todo_database "new_todo_project/pkg/database"
 	"new_todo_project/pkg/domain"
 	"os"
 	"testing"
+
+	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/rs/zerolog"
+	"github.com/smartystreets/goconvey/convey"
 )
 
 func TestGetUsers(t *testing.T) {
@@ -91,12 +92,12 @@ func TestAddNewTodo(t *testing.T) {
 
 func TestMarkDone(t *testing.T) {
 	convey.Convey("should call sql", t, func() {
-		db, mock, err:= sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
+		db, mock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
 		if err != nil {
 			t.Fail()
 		}
 		mock.ExpectExec(todo_database.MARK_DONE_TODO)
 		database := todo_database.NewTodoDatabase(zerolog.New(os.Stdout), db)
-		_ = database.MarkDone(context.Background(),1)
+		_ = database.MarkDone(context.Background(), 1)
 	})
 }

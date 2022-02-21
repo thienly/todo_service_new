@@ -17,7 +17,7 @@ func startHttpServer(log zerolog.Logger, grpcPort, port int) error {
 	serverAddr := fmt.Sprintf("0.0.0.0:%d", grpcPort)
 	ctx := context.Background()
 	gwMux := runtime.NewServeMux()
-	if err:= registerEndpoints(ctx, serverAddr, gwMux); err != nil {
+	if err := registerEndpoints(ctx, serverAddr, gwMux); err != nil {
 		return err
 	}
 	// swagger server.
@@ -37,6 +37,6 @@ func registerEndpoints(ctx context.Context, serverAddr string, gwMux *runtime.Se
 	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
 	err := pb.RegisterTodoServiceHandlerFromEndpoint(ctxCancel, gwMux, serverAddr, opts)
 	err = pb.RegisterUserServiceHandlerFromEndpoint(ctxCancel, gwMux, serverAddr, opts)
-	err = pb.RegisterLoginServiceHandlerFromEndpoint(ctxCancel, gwMux, serverAddr, opts )
+	err = pb.RegisterLoginServiceHandlerFromEndpoint(ctxCancel, gwMux, serverAddr, opts)
 	return err
 }

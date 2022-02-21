@@ -6,6 +6,7 @@ require (
 	github.com/DATA-DOG/go-sqlmock v1.5.0
 	github.com/golang/protobuf v1.5.2
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.7.3
+	github.com/jmoiron/sqlx v1.3.4 // indirect
 	github.com/lib/pq v1.10.4
 	github.com/rs/zerolog v1.26.0
 	github.com/smartystreets/goconvey v1.7.2
