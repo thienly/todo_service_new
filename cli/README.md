@@ -1,4 +1,4 @@
 ##  CLI APPLICATION
-This application contains several features 
-- List all todos
-- Update a todo
+CLI todo applications. There are use cases:  
+- Log in: todo login
+- Log out
