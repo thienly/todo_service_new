@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/jmoiron/sqlx"
 	"github.com/rs/zerolog"
 	"github.com/smartystreets/goconvey/convey"
 )
@@ -16,11 +17,13 @@ import (
 func TestGetUsers(t *testing.T) {
 	logger := zerolog.New(os.Stdout)
 	convey.Convey("the sql query should be called", t, func() {
-		db, mock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
+		mockDB, mock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
+		db := sqlx.NewDb(mockDB, "sqlmock")
+		defer mockDB.Close()
 		if err != nil {
 			t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
 		}
-		defer db.Close()
+
 		cl := []string{"user_id", "username", "password", "email", "id", "title", "done"}
 		rows := sqlmock.NewRows(cl)
 		rows.AddRow(1, "test", "password", "p@password.com", nil, nil, nil)
@@ -38,7 +41,9 @@ func TestGetUsers(t *testing.T) {
 
 func TestAddNewUser(t *testing.T) {
 	convey.Convey("the query should be called", t, func() {
-		db, mock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
+		mockDB, mock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
+		db := sqlx.NewDb(mockDB, "sqlmock")
+		defer mockDB.Close()
 		if err != nil {
 			t.Fail()
 		}
@@ -48,7 +53,7 @@ func TestAddNewUser(t *testing.T) {
 		mock.ExpectQuery(todo_database.INSERT_NEW_USER).WithArgs("test", "test", "test").WillReturnRows().WillReturnRows(rows)
 		mock.ExpectCommit()
 		database := todo_database.NewTodoDatabase(zerolog.New(os.Stdout), db)
-		id, err := database.AddNewUser(context.Background(), &domain.User{
+		id, _ := database.AddNewUser(context.Background(), &domain.User{
 			Name:     "test",
 			Password: "test",
 			Email:    "test",
@@ -59,7 +64,9 @@ func TestAddNewUser(t *testing.T) {
 	})
 
 	convey.Convey("should call rollback when there is an error", t, func() {
-		db, mock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
+		mockDB, mock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
+		db := sqlx.NewDb(mockDB, "sqlmock")
+		defer mockDB.Close()
 		if err != nil {
 			t.Fail()
 		}
@@ -73,7 +80,9 @@ func TestAddNewUser(t *testing.T) {
 
 func TestAddNewTodo(t *testing.T) {
 	convey.Convey("should call sql", t, func() {
-		db, mock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
+		mockDB, mock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
+		db := sqlx.NewDb(mockDB, "sqlmock")
+		defer mockDB.Close()
 		if err != nil {
 			t.Fail()
 		}
@@ -92,7 +101,9 @@ func TestAddNewTodo(t *testing.T) {
 
 func TestMarkDone(t *testing.T) {
 	convey.Convey("should call sql", t, func() {
-		db, mock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
+		mockDB, mock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
+		db := sqlx.NewDb(mockDB, "sqlmock")
+		defer mockDB.Close()
 		if err != nil {
 			t.Fail()
 		}

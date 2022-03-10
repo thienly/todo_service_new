@@ -1,5 +1,7 @@
 # To do service is a hobby project that specify to learn golang. There is no GUI everything should be done via command line.
-# Use cases:
-1. User is able to download a binary file and create new account through command line.
-2. User is able to login and list top 10 of todo items that are not done yet.
-3. User is able to mark an item done.
+# Some important use cases:
+1. Users log in to system with their credentials
+2. Users can add/remove/mark done a todo list
+3. Users can list all the todo lists (no criteria)
+4. Notification can send out via serveral methods.
+ 

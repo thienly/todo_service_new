@@ -15,3 +15,5 @@ migration-up:
 migration-down:
 	POSTGRESQL_URL='postgres://puser:ppassword@localhost:5432/todo_database?sslmode=disable' && \
     cd database && chmod +x ./migrate && ./migrate  -database $$POSTGRESQL_URL -path ./migrations down -all
+run:
+	go run cmd/main.go
