@@ -1,9 +1,0 @@
-{
-  "Database": {
-    "Default": "postgres://puser:ppassword@localhost:5432/todo_database?sslmode=disable"
-  },
-  "Email": {
-    "From": "phuthien0308@gmail.com",
-    "Password": "YMfy7RFx"
-  }
-}
