@@ -1,5 +1,5 @@
 db:
-  conn: "This is connection string"
+  conn: "mongodb://mongos0.example.com:27017"
 
 
 

@@ -14,7 +14,7 @@ type Db struct {
 var (
 	PanicErr = "Can not load the application config"
 )
-func LoadConfig() *Config {
+func LoadConfig() (*Config, error) {
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
 	path, err := os.Getwd()
@@ -26,6 +26,9 @@ func LoadConfig() *Config {
 		panic(PanicErr)
 	}
 	cf := &Config{}
-	viper.Unmarshal(cf)
-	return cf
+	err = viper.Unmarshal(cf)
+	if err != nil {
+		return nil, err
+	}
+	return cf, nil
 }

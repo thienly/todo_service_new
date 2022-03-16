@@ -23,5 +23,4 @@ func Register(writer http.ResponseWriter, request *http.Request) {
 	if err != nil {
 		writer.WriteHeader(http.StatusInternalServerError)
 	}
-
 }
