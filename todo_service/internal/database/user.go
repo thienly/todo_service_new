@@ -10,7 +10,7 @@ import (
 )
 
 type TodoDb interface {
-	Add(ctx context.Context, user *domain.User) (string, error)
+	Add(ctx context.Context, user *domain.User) (*domain.User, error)
 	Verify(ctx context.Context, email, password string) (*domain.User, error)
 	Deactive(ctx context.Context, user *domain.User) error
 	AddTodo(ctx context.Context,user *domain.User, todo *domain.Todo) error
@@ -31,9 +31,12 @@ func NewTodoDb(DB *mongo.Database) TodoDb {
 		TodoCollection: todosCollection,
 	}
 }
-func (u *userDbImpl) Add(ctx context.Context, user *domain.User) (string, error) {
-	resp, err := u.UserCollection.InsertOne(ctx, user)
-	return resp.InsertedID.(string), err
+func (u *userDbImpl) Add(ctx context.Context, user *domain.User) (*domain.User, error) {
+	_, err := u.UserCollection.InsertOne(ctx, user)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
 }
 
 func (u *userDbImpl) Verify(ctx context.Context, email, password string) (*domain.User, error) {

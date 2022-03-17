@@ -17,12 +17,17 @@ const (
 	todoKey = "todo"
 )
 
+type UserRegisterRequest struct {
+	Name     string `json:"name"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
 type TokenRequest struct {
-	Email string `json:"email"`
+	Email    string `json:"email"`
 	Password string `json:"password"`
 }
 type TokenResponse struct {
-	Token   string    `json:"token"`
+	Token string `json:"token"`
 }
 type AuthHandler interface {
 	GenerateToken(writer http.ResponseWriter, request *http.Request)
@@ -33,6 +38,14 @@ type authHandlerImpl struct {
 	TodoDb database.TodoDb
 }
 
+func NewAuthHandler(client *mongo.Client) AuthHandler {
+	db := client.Database("todo")
+	todo := database.NewTodoDb(db)
+	return &authHandlerImpl{
+		client: client,
+		TodoDb: todo,
+	}
+}
 func (u *authHandlerImpl) Register(writer http.ResponseWriter, request *http.Request) {
 	all, err := io.ReadAll(request.Body)
 	defer func(Body io.ReadCloser) {
@@ -41,7 +54,7 @@ func (u *authHandlerImpl) Register(writer http.ResponseWriter, request *http.Req
 	if err != nil {
 		writer.WriteHeader(http.StatusBadRequest)
 	}
-	userRes := &UserRegister{}
+	userRes := &UserRegisterRequest{}
 	err = json.Unmarshal(all, userRes)
 
 	user := domain.NewUser(userRes.Name, userRes.Email, userRes.Password)
@@ -51,25 +64,17 @@ func (u *authHandlerImpl) Register(writer http.ResponseWriter, request *http.Req
 	if err != nil {
 		writer.WriteHeader(http.StatusInternalServerError)
 	}
+	writer.WriteHeader(http.StatusCreated)
 }
 
-func NewAuthHandler(client *mongo.Client) AuthHandler {
-	db := client.Database("todo")
-	todo:= database.NewTodoDb(db)
-	return &authHandlerImpl{
-		client: client,
-		TodoDb: todo,
-	}
-}
-
-func (u *authHandlerImpl) GenerateToken(writer http.ResponseWriter, request *http.Request)  {
+func (u *authHandlerImpl) GenerateToken(writer http.ResponseWriter, request *http.Request) {
 	data, err := io.ReadAll(request.Body)
 	if err != nil {
 		log.Err(err)
 		writer.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	tRequest:= &TokenRequest{}
+	tRequest := &TokenRequest{}
 	err = json.Unmarshal(data, tRequest)
 	if err != nil {
 		log.Err(err)
@@ -87,7 +92,7 @@ func (u *authHandlerImpl) GenerateToken(writer http.ResponseWriter, request *htt
 		return
 	}
 	response := TokenResponse{
-		Token:   tokenString,
+		Token: tokenString,
 	}
 	responseData, err := json.Marshal(response)
 	if err != nil {

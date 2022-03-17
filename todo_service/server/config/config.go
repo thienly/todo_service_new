@@ -2,7 +2,6 @@ package config
 
 import (
 	"github.com/spf13/viper"
-	"os"
 )
 
 type Config struct {
@@ -14,19 +13,16 @@ type Db struct {
 var (
 	PanicErr = "Can not load the application config"
 )
-func LoadConfig() (*Config, error) {
+func LoadConfig(path string) (*Config, error) {
+	viper.AutomaticEnv()
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
-	path, err := os.Getwd()
-	if err != nil {
-		panic(PanicErr)
-	}
 	viper.AddConfigPath(path)
 	if err := viper.ReadInConfig(); err != nil {
 		panic(PanicErr)
 	}
 	cf := &Config{}
-	err = viper.Unmarshal(cf)
+	err := viper.Unmarshal(cf)
 	if err != nil {
 		return nil, err
 	}
