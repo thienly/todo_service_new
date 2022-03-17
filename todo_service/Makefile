@@ -1,3 +1,15 @@
+INTEGRATION_TEST_PATH?=./it
+ENV_LOCAL_TEST=\
+	MONGODB_URL=mongodb://mongoadmin:secret@localhost:27017/todos
+mongodb_up:
+	docker run -d -p 27017:27017 --name some-mongo \
+        -e MONGO_INITDB_ROOT_USERNAME=mongoadmin \
+        -e MONGO_INITDB_ROOT_PASSWORD=secret \
+        mongo
+mongodb_down:
+	docker rm -f some-mongo
+integration_test:
+	go test $(INTEGRATION_TEST_PATH)
 all:
 	@echo server generate database psql-start psql-stop migration-up migration-down
 server:
