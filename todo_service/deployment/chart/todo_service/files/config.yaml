@@ -1,0 +1,2 @@
+db:
+  conn: "mongodb://{{ .Values.db.username }}:{{ .Values.db.password }}@{{ .Values.db.address }}:{{ .Values.db.port }}"

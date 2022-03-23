@@ -68,6 +68,7 @@ func (u *authHandlerImpl) Register(writer http.ResponseWriter, request *http.Req
 }
 
 func (u *authHandlerImpl) GenerateToken(writer http.ResponseWriter, request *http.Request) {
+	ctx := context.Background()
 	data, err := io.ReadAll(request.Body)
 	if err != nil {
 		log.Err(err)
@@ -77,14 +78,20 @@ func (u *authHandlerImpl) GenerateToken(writer http.ResponseWriter, request *htt
 	tRequest := &TokenRequest{}
 	err = json.Unmarshal(data, tRequest)
 	if err != nil {
+
+		writer.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	verify, err := u.TodoDb.Verify(ctx, tRequest.Email, tRequest.Password)
+	if err != nil {
 		log.Err(err)
 		writer.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	// verify token request.
-
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"nbf": time.Now().Add(7 * 24 * time.Hour).Unix(),
+		"nbf":       time.Now().Add(7 * 24 * time.Hour).Unix(),
+		"email":     verify.Email,
+		"user_name": verify.Name,
 	})
 	tokenString, err := token.SignedString([]byte(todoKey))
 	if err != nil {

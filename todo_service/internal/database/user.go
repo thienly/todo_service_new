@@ -13,19 +13,18 @@ type TodoDb interface {
 	Add(ctx context.Context, user *domain.User) (*domain.User, error)
 	Verify(ctx context.Context, email, password string) (*domain.User, error)
 	Deactive(ctx context.Context, user *domain.User) error
-	AddTodo(ctx context.Context,user *domain.User, todo *domain.Todo) error
+	AddTodo(ctx context.Context, user *domain.User, todo *domain.Todo) error
 	MarkTodoDone(ctx context.Context, user *domain.User, todo *domain.Todo) error
-
 }
 type userDbImpl struct {
-	DB         *mongo.Database
+	DB             *mongo.Database
 	UserCollection *mongo.Collection
 	TodoCollection *mongo.Collection
 }
 
 func NewTodoDb(DB *mongo.Database) TodoDb {
-	userCollection:= DB.Collection("users")
-	todosCollection:= DB.Collection("todos")
+	userCollection := DB.Collection("users")
+	todosCollection := DB.Collection("todos")
 	return &userDbImpl{DB: DB,
 		UserCollection: userCollection,
 		TodoCollection: todosCollection,
@@ -40,11 +39,11 @@ func (u *userDbImpl) Add(ctx context.Context, user *domain.User) (*domain.User, 
 }
 
 func (u *userDbImpl) Verify(ctx context.Context, email, password string) (*domain.User, error) {
-	singleResult := u.UserCollection.FindOne(ctx, bson.D{{"_id",email}, {"password",password}})
+	singleResult := u.UserCollection.FindOne(ctx, bson.D{{"_id", email}, {"password", password}})
 	if singleResult.Err() != nil {
 		return nil, singleResult.Err()
 	}
-	result:= &domain.User{}
+	result := &domain.User{}
 	err := singleResult.Decode(result)
 	if err != nil {
 		return nil, err
@@ -57,13 +56,13 @@ func (u *userDbImpl) Deactive(ctx context.Context, user *domain.User) error {
 	return err
 }
 
-func (u *userDbImpl) AddTodo(ctx context.Context,user *domain.User, todo *domain.Todo) error {
-	session, err:= u.DB.Client().StartSession()
-	if err != nil{
+func (u *userDbImpl) AddTodo(ctx context.Context, user *domain.User, todo *domain.Todo) error {
+	session, err := u.DB.Client().StartSession()
+	if err != nil {
 		return err
 	}
 	defer session.EndSession(ctx)
-	callback:= func(sessionCtx mongo.SessionContext) (interface{}, error){
+	callback := func(sessionCtx mongo.SessionContext) (interface{}, error) {
 		_, err = u.TodoCollection.InsertOne(ctx, todo)
 		if err != nil {
 			return nil, err
@@ -88,7 +87,7 @@ func (u *userDbImpl) MarkTodoDone(ctx context.Context, user *domain.User, todo *
 		return err
 	}
 	defer session.EndSession(ctx)
-	callback:= func(sessionCtx mongo.SessionContext) (interface{}, error) {
+	callback := func(sessionCtx mongo.SessionContext) (interface{}, error) {
 		// move it out of user collections.
 		for i, todo := range user.Todos {
 			if todo.Id == todo.Id {
@@ -103,10 +102,10 @@ func (u *userDbImpl) MarkTodoDone(ctx context.Context, user *domain.User, todo *
 		if err != nil {
 			return nil, err
 		}
-		return nil,nil
+		return nil, nil
 	}
 	_, err = session.WithTransaction(ctx, callback)
-	if err != nil{
+	if err != nil {
 		return err
 	}
 	return nil
