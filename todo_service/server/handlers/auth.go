@@ -18,15 +18,18 @@ const (
 )
 
 type UserRegisterRequest struct {
+	Request
 	Name     string `json:"name"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
 type TokenRequest struct {
+	Request
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
 type TokenResponse struct {
+	Response
 	Token string `json:"token"`
 }
 type AuthHandler interface {
